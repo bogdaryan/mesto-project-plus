@@ -27,6 +27,13 @@
         "ts": "never"
       }
     ],
-    "no-underscore-dangle": ["allow"]
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["_id"]
+      }
+    ],
+    "comma-dangle": "off",
+    "no-console": "off"
   }
 }

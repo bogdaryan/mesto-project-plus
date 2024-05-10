@@ -11,9 +11,9 @@ interface ICard extends Document {
 const cardSchema: Schema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
     minlength: 2,
     maxlength: 30,
+    required: true,
   },
   link: {
     type: String,
@@ -21,6 +21,7 @@ const cardSchema: Schema = new mongoose.Schema({
   },
   owner: {
     type: Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   likes: {

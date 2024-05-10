@@ -9,19 +9,19 @@ interface IUser extends Document {
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    require: true,
     minLength: 2,
     maxLength: 30,
+    required: true,
   },
   about: {
     type: String,
-    require: true,
     minLength: 2,
     maxLength: 200,
+    required: true,
   },
   avatar: {
     type: String,
-    require: true,
+    required: true,
   },
 });
 
