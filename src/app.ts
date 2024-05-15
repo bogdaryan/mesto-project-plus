@@ -1,13 +1,17 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import helmet from 'helmet';
 
 import userRouter from './routes/user';
 import cardRouter from './routes/card';
 import handleError from './middleware/error-handler';
+import NotFoundError from './error/not-found-error';
 
 const URL = 'mongodb://localhost:27017/mestodb';
 
 const app = express();
+
+app.use(helmet());
 app.use(express.json());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -20,6 +24,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
+app.use('*', (req: Request, res: Response) => {
+  res.send(new NotFoundError('Запрашиваемый ресурс не найден'));
+});
 
 app.use(handleError);
 

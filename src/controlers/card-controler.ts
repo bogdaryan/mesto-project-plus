@@ -14,7 +14,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     ...req.body,
     owner: res.locals.user._id,
   })
-    .then((card) => res.status(200).send(card))
+    .then((card) => res.status(201).send(card))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
         return next(new ValidationError('Переданы невалидные данные'));

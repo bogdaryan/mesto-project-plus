@@ -4,12 +4,11 @@ import mongoose from 'mongoose';
 import User from '../models/user';
 import ValidationError from '../error/validation-error';
 import NotFoundError from '../error/not-found-error';
-import BadRequestError from '../error/bad-request-error';
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => {
   User.find()
-    .then((users) => res.status(200).send(users))
-    .catch((error) => next(error));
+    .then((users) => res.send(users))
+    .catch(next);
 };
 
 export const getUser = (req: Request, res: Response, next: NextFunction) => {
@@ -28,7 +27,7 @@ export const getUser = (req: Request, res: Response, next: NextFunction) => {
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
   User.create(req.body)
     .then((result) => {
-      res.status(200).send(result);
+      res.status(201).send(result);
     })
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
@@ -44,10 +43,19 @@ export const updateProfile = (
   res: Response,
   next: NextFunction
 ) => {
-  User.findByIdAndUpdate(res.locals.user._id, req.body)
-    .orFail(() => new BadRequestError('Переданы некорректные данные'))
+  User.findByIdAndUpdate(res.locals.user._id, req.body, {
+    new: true,
+    runValidators: true,
+  })
+    .orFail(() => new NotFoundError('Пользователь не найдет'))
     .then((result) => res.status(200).send(result))
-    .catch((error) => next(error));
+    .catch((error) => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        return next(new ValidationError('Переданы невалидные данные'));
+      }
+
+      return next(error);
+    });
 };
 
 export const updateProfileAvatar = (
@@ -55,8 +63,17 @@ export const updateProfileAvatar = (
   res: Response,
   next: NextFunction
 ) => {
-  User.findByIdAndUpdate(res.locals.user._id, req.body)
-    .orFail(() => new BadRequestError('Переданы некорректные данные'))
+  User.findByIdAndUpdate(res.locals.user._id, req.body.avatar, {
+    new: true,
+    runValidators: true,
+  })
+    .orFail(() => new NotFoundError('Пользователь не найдет'))
     .then((result) => res.status(200).send(result))
-    .catch((error) => next(error));
+    .catch((error) => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        return next(new ValidationError('Переданы невалидные данные'));
+      }
+
+      return next(error);
+    });
 };

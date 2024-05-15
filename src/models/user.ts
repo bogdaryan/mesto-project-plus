@@ -1,4 +1,5 @@
 import mongoose, { Document } from 'mongoose';
+import validator from 'validator';
 
 interface IUser extends Document {
   name: string;
@@ -9,19 +10,23 @@ interface IUser extends Document {
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    minLength: 2,
-    maxLength: 30,
-    required: true,
+    required: [true, 'Поле "name" должно быть заполнено'],
+    minlength: [2, 'Минимальная длина поля "name" - 2'],
+    maxlength: [30, 'Максимальная длина поля "name" - 30'],
   },
   about: {
     type: String,
-    minLength: 2,
-    maxLength: 200,
-    required: true,
+    required: [true, 'Поле "about" должно быть заполнено'],
+    minlength: [2, 'Минимальная длина поля "about" - 2'],
+    maxlength: [200, 'Максимальная длина поля "about" - 200'],
   },
   avatar: {
     type: String,
-    required: true,
+    required: [true, 'Поле "avatar" должно быть заполнено'],
+    validate: {
+      validator: (url: string) => validator.isURL(url),
+      message: 'Некорректный URL',
+    },
   },
 });
 
