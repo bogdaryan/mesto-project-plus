@@ -47,7 +47,7 @@ export const updateProfile = (
     new: true,
     runValidators: true,
   })
-    .orFail(() => new NotFoundError('Пользователь не найдет'))
+    .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((result) => res.status(200).send(result))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
@@ -67,7 +67,7 @@ export const updateProfileAvatar = (
     new: true,
     runValidators: true,
   })
-    .orFail(() => new NotFoundError('Пользователь не найдет'))
+    .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((result) => res.status(200).send(result))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
