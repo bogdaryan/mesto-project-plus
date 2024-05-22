@@ -7,7 +7,6 @@ import cardRouter from './card';
 const rootRouter = Router();
 
 rootRouter.use('/users', userRouter);
-
 rootRouter.use('/cards', cardRouter);
 
 rootRouter.use('*', (req: Request, res: Response) => {
