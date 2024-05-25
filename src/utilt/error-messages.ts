@@ -6,10 +6,10 @@ enum ERROR_MESSAGES {
   SOURCE_404 = 'Ресурс не найден',
   USER_EXISTS = 'Пользователь с таким email уже существует',
   INVALID_DATA = 'Переданы невалидные данные',
+  INVALID_TOKET = 'Передан невалидный токен ',
   AUTHORIZATION_BAD_DATA = 'Неправильный email или пароль',
   AUTHORIZATION_NEED = 'Необходима авторизация',
   FORBIDDEN = 'У Вас нет прав для совершения данного действия',
-  FORBIDDEN_CARD = 'Это не ваша карточка',
 }
 
 export default ERROR_MESSAGES;

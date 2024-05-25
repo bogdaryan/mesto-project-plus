@@ -4,20 +4,15 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 import User from '../models/user';
-import ValidationError from '../error/validation-error';
-import NotFoundError from '../error/not-found-error';
-import ConflictError from '../error/conflict-error';
-import ERROR_MESSAGES from '../utilt/error-messages';
 import { SECRET_KEY } from '../utilt/constants';
 
-export const getUsers = (req: Request, res: Response, next: NextFunction) => {
-  User.find()
-    .then((users) => res.send(users))
-    .catch(next);
-};
+import ERROR_MESSAGES from '../utilt/error-messages';
+import { ValidationError, NotFoundError, ConflictError } from '../error';
 
-export const getUser = (req: Request, res: Response, next: NextFunction) => {
-  User.findById(req.params.userId)
+export const getUserData = (id: string, res: Response, next: NextFunction) => {
+  console.log(id);
+
+  User.findById(id)
     .orFail(() => new NotFoundError(ERROR_MESSAGES.USER_404))
     .then((user) => res.status(200).send(user))
     .catch((error) => {
@@ -27,6 +22,24 @@ export const getUser = (req: Request, res: Response, next: NextFunction) => {
 
       return next(error);
     });
+};
+
+export const getUsers = (req: Request, res: Response, next: NextFunction) => {
+  User.find()
+    .then((users) => res.send(users))
+    .catch(next);
+};
+
+export const getUser = (req: Request, res: Response, next: NextFunction) => {
+  getUserData(req.params.userId, res, next);
+};
+
+export const getCurrentUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  getUserData(res.locals.user._id, res, next);
 };
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
