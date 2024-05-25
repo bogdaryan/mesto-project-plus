@@ -2,30 +2,31 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import AuthError from '../error/auth-error';
 import ERROR_MESSAGES from '../utilt/error-messages';
+import { SECRET_KEY } from '../utilt/constants';
 
 interface SessionRequest extends Request {
   user?: string | JwtPayload;
 }
 
-// const extractBearerToken = (header: string) => header.replace('Bearer ', '');
+const extractBearerToken = (header: string) => header.replace('Bearer ', '');
 
 export default (req: SessionRequest, res: Response, next: NextFunction) => {
-  console.log(req.headers);
+  const { authorization } = req.headers;
+  let payload;
 
-  // if (!authorization || !authorization.startsWith('Bearer ')) {
-  //   return new AuthError(ERROR_MESSAGES.AUTHORIZATION_NEED);
-  // }
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    throw new AuthError(ERROR_MESSAGES.AUTHORIZATION_NEED);
+  }
 
-  // const token = authorization;
-  // let payload;
+  const token = extractBearerToken(authorization);
 
-  // try {
-  //   payload = jwt.verify(token, 'super-strong-secret');
-  // } catch (err) {
-  //   return new AuthError(ERROR_MESSAGES.AUTHORIZATION_NEED);
-  // }
+  try {
+    payload = jwt.verify(token, SECRET_KEY);
+  } catch (err) {
+    throw new AuthError(ERROR_MESSAGES.INVALID_TOKET);
+  }
 
-  // res.locals.user._id = payload;
+  res.locals.user = payload;
 
   return next();
 };

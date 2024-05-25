@@ -1,22 +1,16 @@
 import { Router } from 'express';
 import {
+  getCurrentUser,
   getUser,
   getUsers,
-  createUser,
   updateProfile,
   updateProfileAvatar,
-  login,
 } from '../controlers/user-controler';
-import auth from '../middleware/auth';
 
 const router = Router();
 
-router.post('/signup', createUser);
-router.post('/signin', login);
-
-router.use(auth);
-
 router.get('/', getUsers);
+router.get('/me', getCurrentUser);
 router.get('/:userId', getUser);
 
 router.patch('/me', updateProfile);
