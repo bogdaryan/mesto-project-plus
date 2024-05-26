@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema<IUser, UserModel>({
   avatar: {
     type: String,
     validate: {
-      validator: (url: string) => validator.isURL(url),
+      validator: (v: string) => validator.isURL(v),
       message: 'Некорректный URL',
     },
     default:
@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema<IUser, UserModel>({
     required: [true, 'Поле "email" должно быть заполнено'],
     unique: true,
     validate: {
-      validator: (email: string) => validator.isEmail(email),
+      validator: (v: string) => validator.isEmail(v),
       message: 'Некорректный Email',
     },
   },
@@ -65,4 +65,4 @@ userSchema.statics.findUserByCredentials = function findByCredentials(
     });
 };
 
-export default mongoose.model<IUser, UserModel>('User', userSchema);
+export default mongoose.model<IUser, UserModel>('user', userSchema);
