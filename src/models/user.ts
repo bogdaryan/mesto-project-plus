@@ -3,7 +3,7 @@ import validator from 'validator';
 import bcrypt from 'bcrypt';
 import { IUser, UserModel } from './types';
 
-import { BadRequestError } from '../error';
+import { AuthError } from '../error';
 import ERROR_MESSAGES from '../utilt/error-messages';
 
 const userSchema = new mongoose.Schema<IUser, UserModel>({
@@ -52,12 +52,12 @@ userSchema.statics.findUserByCredentials = function findByCredentials(
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new BadRequestError(ERROR_MESSAGES.AUTHORIZATION_BAD_DATA);
+        throw new AuthError(ERROR_MESSAGES.AUTHORIZATION_BAD_DATA);
       }
 
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          throw new BadRequestError(ERROR_MESSAGES.AUTHORIZATION_BAD_DATA);
+          throw new AuthError(ERROR_MESSAGES.AUTHORIZATION_BAD_DATA);
         }
 
         return user;

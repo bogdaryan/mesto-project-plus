@@ -6,13 +6,12 @@ class CardValidation {
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30).required(),
       link: Joi.string().regex(urlRegEX).required(),
-      owner: Joi.string(),
     }),
   });
 
   deleteCard = celebrate({
     params: Joi.object().keys({
-      cardId: Joi.string().length(24).required(),
+      cardId: Joi.string().length(24).hex().required(),
     }),
   });
 
