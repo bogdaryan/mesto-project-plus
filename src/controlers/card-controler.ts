@@ -5,12 +5,7 @@ import Card from '../models/card';
 import ERROR_MESSAGES from '../utilt/error-messages';
 import STATUS_CODES from '../utilt/status-codes';
 
-import {
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-  ValidationError,
-} from '../error';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../error';
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({})
@@ -26,7 +21,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     .then((card) => res.status(STATUS_CODES.CREATED).send(card))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
-        return next(new ValidationError(ERROR_MESSAGES.INVALID_DATA));
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
       }
 
       return next(error);
@@ -34,12 +29,15 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
-  Card.findByIdAndDelete(req.params.cardId)
-    .orFail(() => new NotFoundError(ERROR_MESSAGES.SOURCE_404))
+  Card.findOneAndDelete({
+    _id: req.params.cardId,
+    owner: res.locals.user._id,
+  })
     .then((card) => {
-      if (card.owner.toString() !== res.locals.user._id) {
-        next(new ForbiddenError(ERROR_MESSAGES.FORBIDDEN));
+      if (!card) {
+        throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
       }
+
       res.status(200).send(card);
     })
     .catch((error) => {

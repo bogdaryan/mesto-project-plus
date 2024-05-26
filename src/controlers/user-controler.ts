@@ -7,17 +7,16 @@ import User from '../models/user';
 import { SECRET_KEY } from '../utilt/constants';
 
 import ERROR_MESSAGES from '../utilt/error-messages';
-import { ValidationError, NotFoundError, ConflictError } from '../error';
+import { NotFoundError, ConflictError, BadRequestError } from '../error';
+import STATUS_CODES from '../utilt/status-codes';
 
 export const getUserData = (id: string, res: Response, next: NextFunction) => {
-  console.log(id);
-
   User.findById(id)
     .orFail(() => new NotFoundError(ERROR_MESSAGES.USER_404))
     .then((user) => res.status(200).send(user))
     .catch((error) => {
       if (error instanceof mongoose.Error.CastError) {
-        return next(new ValidationError(ERROR_MESSAGES.INVALID_DATA));
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
       }
 
       return next(error);
@@ -48,10 +47,10 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
   bcrypt
     .hash(password, 10)
     .then((hash: string) => User.create({ email, password: hash }))
-    .then((user) => res.send(user))
+    .then((user) => res.status(STATUS_CODES.CREATED).send(user))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
-        return next(new ValidationError(ERROR_MESSAGES.INVALID_DATA));
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
       }
 
       if (error.code === 11000) {
@@ -62,7 +61,23 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-export const updateProfile = (
+export const updateUser = (req: Request, res: Response, next: NextFunction) => {
+  User.findByIdAndUpdate(res.locals.user._id, req.body, {
+    new: true,
+    runValidators: true,
+  })
+    .orFail(() => new NotFoundError(ERROR_MESSAGES.USER_404))
+    .then((result) => res.status(200).send(result))
+    .catch((error) => {
+      if (error instanceof mongoose.Error.CastError) {
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
+      }
+
+      return next(error);
+    });
+};
+
+export const updateUserAvatar = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -72,30 +87,10 @@ export const updateProfile = (
     runValidators: true,
   })
     .orFail(() => new NotFoundError(ERROR_MESSAGES.USER_404))
-    .then((result) => res.status(200).send(result))
+    .then((user) => res.send(user))
     .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        return next(new ValidationError(ERROR_MESSAGES.INVALID_DATA));
-      }
-
-      return next(error);
-    });
-};
-
-export const updateProfileAvatar = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  User.findByIdAndUpdate(res.locals.user._id, req.body.avatar, {
-    new: true,
-    runValidators: true,
-  })
-    .orFail(() => new NotFoundError(ERROR_MESSAGES.USER_404))
-    .then((result) => res.status(200).send(result))
-    .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        return next(new ValidationError(ERROR_MESSAGES.INVALID_DATA));
+      if (error instanceof mongoose.Error.CastError) {
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
       }
 
       return next(error);
