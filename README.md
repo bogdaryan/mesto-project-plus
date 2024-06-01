@@ -2,4 +2,10 @@
 
 ![Stack](https://skillicons.dev/icons?i=ts,nodejs,express,mongodb)
 
-Написал api для проекта <a href="https://github.com/bogdaryan/mesto-project" > mesto-project </a>. Сделал защиту маршрутов, валидацию запросов, мидлвары, описал модели.
+* Маршруты защищены
+* Есть валидация запросов
+* Написаны Мидлвары
+* Описал модели mongoose
+
+Api написано для проекта <a href="https://github.com/bogdaryan/mesto-project" > mesto-project </a>
+
